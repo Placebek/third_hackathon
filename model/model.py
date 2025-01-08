@@ -1,6 +1,4 @@
-from datetime import datetime
-from typing import Optional
-from sqlalchemy import Boolean, Column, DateTime, String, Integer, Float, ForeignKey, Date, func, Text
+from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, Text
 from sqlalchemy.orm import relationship
 from database.db import Base
 
@@ -8,6 +6,7 @@ from database.db import Base
 class Users(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(150), nullable=False)
     email = Column(String(150), nullable=False, unique=True)
     hashed_password = Column(String(100), nullable=False)
     age = Column(Integer, nullable=False) 
@@ -20,7 +19,11 @@ class Users(Base):
 class Authors(Base):
     __tablename__ = "authors"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(150), nullable=False)
+    author_name = Column(String(500), nullable=False)
+    author_photo = Column(Text)
+    author_bio = Column(Text, nullable=True)
+
+
     stories = relationship("StoryBerries", back_populates="author")
 
 
@@ -32,6 +35,15 @@ class AgeCategories(Base):
     stories = relationship("StoryBerries", back_populates="age_category")
 
 
+class Categories(Base):
+    __tablename__ = "categories"
+    id = Column(Integer, primary_key=True, index=True)
+    name_category = Column(String, nullable=False, unique=True)  
+
+    stories_category = relationship("StoryBerries", back_populates="categories")
+
+
+
 class Favorites(Base):
     __tablename__ = "favorites"
     id = Column(Integer, primary_key=True, index=True)
@@ -40,6 +52,18 @@ class Favorites(Base):
 
     user = relationship("Users", back_populates="favorites")
     story_berry = relationship("StoryBerries", back_populates="favorites")
+
+
+
+class StoriesCategory(Base):
+    __tablename__ = "stories_category"
+    id = Column(Integer, primary_key=True, index=True)
+    story_berries_id = Column(Integer, ForeignKey('story_berries.id'), nullable=False)
+    category_id = Column(Integer, ForeignKey('categories.id'), nullable=True)
+
+    categories = relationship("Categories", back_populates="stories_category")
+    stories = relationship("StoryBerries", back_populates="stories_category")
+
 
 
 
@@ -54,7 +78,8 @@ class StoryBerries(Base):
     author_id = Column(Integer, ForeignKey('authors.id'), nullable=True)
     created_at = Column(DateTime(timezone=True), default=func.now())
 
-    # Связи с другими таблицами
     age_category = relationship("AgeCategories", back_populates="stories")
     author = relationship("Authors", back_populates="stories")
     favorites = relationship("Favorites", back_populates="story_berry")
+    stories_category = relationship("Categories", back_populates="stories")
+    
