@@ -5,7 +5,22 @@
 </template>
 
 <script>
+import { useThemeStore } from '../src/stores/pinia/themeStore';
+
 export default {
-  name: 'App',
+  name: "App",
+  setup() {
+    const themeStore = useThemeStore();
+
+    themeStore.initializeTheme();
+
+    return {
+      theme: themeStore.theme,
+      toggleTheme: themeStore.toggleTheme,
+    };
+  },
 };
+
 </script>
+
+
