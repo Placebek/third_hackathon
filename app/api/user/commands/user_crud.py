@@ -15,32 +15,45 @@ from model.model import Users, Favorites, StoryBerries, StoriesCategory, Categor
 
 async def all_fairy_tails(skip: int, limit: int, db: AsyncSession):
     stmt = await db.execute(
-        select(StoryBerries)
+        select(StoryBerries, Categories)
+        .join(StoriesCategory, StoriesCategory.story_berries_id == StoryBerries.id)
+        .join(Categories, Categories.id == StoriesCategory.category_id)
         .offset(skip)
         .limit(limit)
-        .options(
-            selectinload(StoryBerries.categories).joinedload(StoriesCategory.category),
-            selectinload(StoryBerries.author),
-        )
     )
 
-    stories = stmt.scalars().all()
 
+    stories = stmt.all()
+    # for i in stories:
+    #     print("QWEQWEEWQ", i)
+    # return [
+    #     FairyTailsResponse(
+    #         id=story.id,
+    #         title=story.title,
+    #         subtitle=story.subtitle,
+    #         initial_picture=story.initial_picture,
+    #         story_reads=story.story_reads,
+    #         text=story.text,
+    #         category={
+    #             sc.categories.id: sc.categories.name for sc in story.stories_categories
+    #         }, 
+    #         age_category=story.age_category_id,
+    #         author_name=story.author.name if story.author else None,
+    #     )
+    #     for story in stories
+            
+    # ]
     return [
-        FairyTailsResponse(
-            id=story.id,
-            title=story.title,
-            subtitle=story.subtitle,
-            initial_picture=story.initial_picture,
-            story_reads=story.story_reads,
-            text=story.text,
-            categories={
-                sc.category.id: sc.category.name for sc in story.categories
-            }, 
-            age_category=story.age_category_id,
-            author_name=story.author.name if story.author else None,
-        )
-        for story in stories
+        {
+            "id": story.id,
+            "title": story.title,
+            "subtitle": story.subtitle,
+            "initial_picture": story.initial_picture,
+            "story_reads": story.story_reads,
+            "text": story.text,
+            "categories": [{"id": category.id, "name": category.name}]
+        }
+        for story, category in stories
     ]
 
 

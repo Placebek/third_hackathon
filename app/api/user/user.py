@@ -47,13 +47,13 @@ async def user(user_data: UserData, access_token: str = Depends(get_access_token
 
 @router.get(
     "/stories", 
+    summary="",
     response_model=FairyTailsResponse
 )
 async def fairy_tails(
-    access_token: str = Depends(get_access_token), 
     db: AsyncSession = Depends(get_db),
     skip: int = 0, 
     limit: int = 100, 
 ):
-    return await all_fairy_tails(access_token=access_token, db=db, limit=limit, skip=skip)
+    return await all_fairy_tails(db=db, limit=limit, skip=skip)
 

@@ -69,8 +69,7 @@ class StoryBerries:
                     count_page= len(pages_bar.find_elements(By.TAG_NAME, 'li'))
                 except: 
                     count_page = 2
-                print('rrrr', count_page)
-                for index in range(2, count_page):  
+                for index in range(1, count_page):  
                     self.driver.get(f'{pro_index}page/{index}')
                     category = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div[1]/div/header/h1').get_attribute('textContent')
                     insert_data['category_name'] = category
