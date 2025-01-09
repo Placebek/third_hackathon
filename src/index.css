@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.login-bg-img {
+  background-image: url('./assets/img/auth_img.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.input-box {
+  @apply w-full text-sm bg-cyan-600/5 rounded px-5 py-3 mb-4 outline-none;
+}
+
+.btn-login-f {
+  @apply w-full text-sm font-medium text-white bg-[#ae87e0] shadow-md shadow-cyan-200/50 p-[10px] rounded-full my-1 hover:bg-[#864fc9];
+}
+
+.btn-login-s {
+  @apply w-full text-sm font-medium text-white bg-[#966acc] shadow-md shadow-cyan-200/50 p-[10px] rounded-full my-1 hover:bg-[#864fc9];
+}
+
+.btn-menu-f {
+  @apply w-full h-[32px] flex items-center justify-center text-sm font-medium text-black bg-white shadow-md shadow-[#966acc] p-[10px] rounded-2xl my-1 hover:bg-[#864fc9];
+}
