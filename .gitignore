@@ -16,6 +16,4 @@ ex.py
 envenv.py
 cert.pem
 key.pem
-app/
 chromedriver-win64/
-decorators/
