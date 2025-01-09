@@ -1,11 +1,17 @@
 <template>
   <div>
-    <div class="bg-gradient-to-l bg-[#1c1c1c] text-white fixed button-0 left-0 w-full z-[99998]">
+    <div :class="['bg-gradient-to-l rounded-lg fixed button-0 left-0 w-full z-[99998]', theme === 'dark' ? ' bg-[#1c1c1c] text-white' : ' bg-[#f5f2f2] text-black']">
       <div class="h-[50px]">
-        <div class="flex items-center gap-4 text-white">
+        <div class="flex items-end justify-end pr-6 mt-3 gap-3">
           <div @click="toggleTheme" class="cursor-pointer transition-all">
             <v-icon
-              :is="theme === 'dark' ? 'wi-day-sunny' : 'io-moon'" 
+              v-if="theme === 'dark'"
+              name="io-sunny"
+              class="cursor-pointer transition-all text-[30px]"
+            />
+            <v-icon
+              v-else
+              name="io-moon"
               class="cursor-pointer transition-all text-[30px]"
             />
           </div>
@@ -16,53 +22,27 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
-import { WiDaySunny, IoMoon } from "oh-vue-icons/icons";
 import { addIcons } from "oh-vue-icons";
+import { IoSunny, IoMoon } from "oh-vue-icons/icons";
 
-addIcons(WiDaySunny, IoMoon);
+addIcons(IoSunny); 
+addIcons(IoMoon); 
 
 export default {
   name: "FootMenu",
-  setup() {
-    const theme = ref(localStorage.getItem("theme") || "light");
-
-    const toggleTheme = () => {
-      theme.value = theme.value === "dark" ? "light" : "dark";
-    };
-
-    watch(
-      theme,
-      (newTheme) => {
-        const rootElement = document.documentElement;
-
-        if (newTheme === "dark") {
-          rootElement.classList.add("dark");
-          localStorage.setItem("theme", "dark");
-        } else {
-          rootElement.classList.remove("dark");
-          localStorage.setItem("theme", "light");
-        }
-      },
-      { immediate: true }
-    );
-
-    const showMenu = ref(false);
-
-    const toggleMenu = () => {
-      showMenu.value = !showMenu.value;
-    };
-
-    return {
-      theme,
-      toggleTheme,
-      showMenu,
-      toggleMenu,
-    };
+  props: {
+    theme: {
+      type: String,
+      required: true,
+    },
+  },
+  methods: {
+    toggleTheme() {
+      this.$emit("toggle-theme");
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Добавьте стили, если необходимо */
 </style>

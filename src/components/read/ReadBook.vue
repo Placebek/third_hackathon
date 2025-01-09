@@ -1,8 +1,8 @@
 <template>
-  <div class="w-full h-screen">
+  <div :class="['w-full h-screen', theme === 'dark' ? 'bg-[#0A0A0A]' : 'bg-white']">
     <Navbar />
     <div>
-      <div class="flex items-center justify-center mt-12 p-2 text-white">
+      <div :class="['flex items-center justify-center mt-12 p-2', theme === 'dark' ? 'text-white' : 'text-black']">
         <div class="flex items-center flex-col text-center gap-2 p-2">
           <div class="text-2xl">
               PUSS IN POOTS
@@ -18,13 +18,12 @@
         </div>
       </div>
     </div>
-    <FootMenu />
+    <FootMenu :theme="theme" @toggle-theme="toggleTheme" />
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
-import { addIcons } from "oh-vue-icons";
+import { ref, watch } from "vue";
 import Navbar from "../menu/Navbar.vue";
 import FootMenu from "../read/FootMenu.vue";
 
@@ -32,10 +31,36 @@ export default {
   name: "ReadBook",
   components: {
     Navbar,
-    FootMenu
+    FootMenu,
+  },
+  setup() {
+    const theme = ref(localStorage.getItem("theme") || "light");
+
+    const toggleTheme = () => {
+      theme.value = theme.value === "dark" ? "light" : "dark";
+    };
+
+    watch(
+      theme,
+      (newTheme) => {
+        const rootElement = document.documentElement;
+        console.log(theme);
+
+        if (newTheme === "dark") {
+          rootElement.classList.add("dark");
+          localStorage.setItem("theme", "dark");
+        } else {
+          rootElement.classList.remove("dark");
+          localStorage.setItem("theme", "light");
+        }
+      },
+      { immediate: true }
+    );
+
+    return {
+      theme,
+      toggleTheme,
+    };
   },
 };
 </script>
-
-<style scoped>
-</style>
