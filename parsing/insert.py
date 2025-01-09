@@ -1,7 +1,6 @@
 from sqlalchemy.exc import IntegrityError
-from model.model import *
-
-from parsing.db_config import DatabaseManager
+from db_config import DatabaseManager
+from db_pars import *
 
 
 class Inserting:
@@ -18,13 +17,12 @@ class Inserting:
             if not existing_story_berries:
                 new_story_berries = StoryBerries(
                     title=story_data['title'],
-                    duration=story_data['duration'],
-                    link=story_data['link'],
+                    subtitle=story_data['subtitle'],
+                    text=story_data['text'],
                     initial_picture=story_data['initial_picture'],
                     story_reads=story_data['story_reads'],
                     age_category_id=int(self.insert_age_categories(story_data)),
                     author_id=int(self.insert_author(story_data)),
-                    category_id=int(self.insert_categories(story_data)),
 
 
                 )
@@ -45,13 +43,13 @@ class Inserting:
     def insert_author(self, story_data):
         try:
             existing_author = self.session.query(Authors).filter_by(
-                author_name = story_data['author_name']
+                name = story_data['author_name']
             ).first()
             if not existing_author:
                 new_author = Authors(
-                    author_name=story_data['author_name'],
-                    author_logo=story_data['author_logo'],
-                    author_bio=story_data['author_bio']
+                    name=story_data['author_name'],
+                    photo=story_data['author_photo'],
+                    bio=story_data['author_bio']
                 )
                 self.session.add(new_author)
                 self.session.commit()
@@ -91,11 +89,11 @@ class Inserting:
     def insert_categories(self, story_data):
         try:
             existing_category = self.session.query(Categories).filter_by(
-                name_categories = story_data['category']
+                name = story_data['category_name']
             ).first()
             if not existing_category:
                 new_category = Categories(
-                    name_categories = story_data['category']
+                    name = story_data['category_name']
                 )
                 self.session.add(new_category)
                 self.session.commit()

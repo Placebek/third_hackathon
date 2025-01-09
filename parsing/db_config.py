@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from parsing.envenv import DATABASE
+from envenv import DATABASE
 Base = declarative_base()
 
 class DatabaseManager:
