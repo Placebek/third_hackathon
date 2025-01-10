@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 from pydantic import BaseModel
 
 
@@ -18,13 +18,27 @@ class FairyTailsResponse(BaseModel):
     subtitle: str
     initial_picture: str
     story_reads: str
-    text: str
-    category: Optional[CategoryStoryInfo]
-    age_category: str
+    category: Optional[List[Dict[str, Union[str, int]]]] 
+    age_category: str   
     author_name: str
 
     class Config:
         from_attributes=True
+
+
+class FairyTailsForReads(BaseModel):
+    id: int
+    title: str
+    subtitle: str
+    text: str
+    story_reads: str
+    category: Optional[List[Dict[str, Union[str, int]]]] 
+    age_category: str   
+
+    class Config:
+        from_attributes=True
+
+
 
 
 class StatusResponse(BaseModel):
@@ -35,9 +49,9 @@ class StatusResponse(BaseModel):
 
 class GetUserData(BaseModel):
     id: int
-    user_name: int
+    username: str
     email: str 
-    age: str 
+    age: int 
 
 
 

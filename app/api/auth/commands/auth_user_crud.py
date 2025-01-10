@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from context.context import create_access_token, hash_password, verify_password
 from app.api.auth.shemas.create import UserBase, UserCreate
@@ -45,8 +45,12 @@ async def user_register(user: UserCreate, db: AsyncSession):
 async def user_login(user: UserBase, db: AsyncSession):
     try:
         result = await db.execute(
-            select(Users)
-            .filter(Users.email == user.email_or_username or Users.username == user.email_or_username)
+            select(Users).filter(
+                or_(
+                    Users.email == user.email_or_username,
+                    Users.username == user.email_or_username
+                )
+            )
         )
         db_user = result.scalar_one_or_none()
 

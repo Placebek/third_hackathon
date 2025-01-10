@@ -1,4 +1,5 @@
 import time
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -30,13 +31,13 @@ class StoryBerries:
         self.insert = Inserting()
 
         self.urls = [
-            # 'https://www.storyberries.com/category/fairy-tales/russian-fairy-tales/'
-            # 'https://www.storyberries.com/category/fairy-tales/scottish-fairy-tales/',
-            # 'https://www.storyberries.com/category/fairy-tales/japanese-fairy-tales/',
-            # 'https://www.storyberries.com/category/fairy-tales/aesops-fables/',
-            # 'https://www.storyberries.com/category/fairy-tales/norse-myths-and-fairy-tales/',
-            # 'https://www.storyberries.com/category/fairy-tales/oscar-wilde-fairy-tales/',
-            # 'https://www.storyberries.com/category/fairy-tales/chinese-fairy-tales/',
+            'https://www.storyberries.com/category/fairy-tales/russian-fairy-tales/'
+            'https://www.storyberries.com/category/fairy-tales/scottish-fairy-tales/',
+            'https://www.storyberries.com/category/fairy-tales/japanese-fairy-tales/',
+            'https://www.storyberries.com/category/fairy-tales/aesops-fables/',
+            'https://www.storyberries.com/category/fairy-tales/norse-myths-and-fairy-tales/',
+            'https://www.storyberries.com/category/fairy-tales/oscar-wilde-fairy-tales/',
+            'https://www.storyberries.com/category/fairy-tales/chinese-fairy-tales/',
             'https://www.storyberries.com/category/fairy-tales/french-fairy-tales/',
             'https://www.storyberries.com/category/fairy-tales/english-fairy-tales/',
             'https://www.storyberries.com/category/fairy-tales/hans-christian-andersen-fairy-tales/',
@@ -59,7 +60,7 @@ class StoryBerries:
 
     def pars_story(self, url):
         insert_data = {}
-        self.setup_driver()                         
+        self.setup_driver()                        
             
         try:
             for pro_index in self.urls:
@@ -83,14 +84,28 @@ class StoryBerries:
                     for sub_index in range(1, summ_cards+1):
                         '''Парсинг данных сказок и категорию'''
                         try:
-                            initial_picture = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/figure/a/img'))).get_attribute('src')
-                            insert_data['initial_picture']= initial_picture
-                        except:
+                            age_category = self.driver.find_element(By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/div/div[1]/a[2]').get_attribute('textContent')
+                            insert_data['age_category']= age_category[4::]
+                        except: 
                             continue
-                        age_category = self.driver.find_element(By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/div/div[1]/a[2]').get_attribute('textContent')
-                        insert_data['age_category']= age_category[4::]
                         title_for_link=self.driver.find_element(By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/div/h2/a')
                         title = title_for_link.get_attribute('textContent')
+
+                        try:
+                            initial_picture = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/figure/a/img'))).get_attribute('src')
+                            url_local_pictures= f"D:\\Hackaton\\third_hackathon\\pars_story\\media\\story_pictures\\{title}.jpg"
+                            url_local_pictures_for_db=f'/media/story_pictures/{title}.jpg'
+                            response = requests.get(initial_picture)
+                            response.raise_for_status()
+
+                            with open(url_local_pictures, "wb") as file:
+                                file.write(response.content)
+                            insert_data['initial_picture']= url_local_pictures_for_db
+                        except:
+                            print('[gggg]')
+                            break
+
+
                         insert_data['title'] = title
                         subtitle =self.driver.find_element(By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/div/div[2]/p').get_attribute('textContent')
                         insert_data['subtitle'] = subtitle
@@ -119,10 +134,19 @@ class StoryBerries:
                         self.driver.switch_to.window(self.driver.window_handles[2])
 
                         '''Парсинг страницы автора'''
-                        author_photo = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/main/div/div[1]/div/header/img').get_attribute('src')
-                        insert_data['author_photo'] = author_photo
                         author_name = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/main/div/div[1]/div/header/h1/span').get_attribute('textContent')
                         insert_data['author_name'] = author_name
+
+                        author_photo = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/main/div/div[1]/div/header/img').get_attribute('src')
+                        url_local_pictures_author= f"D:\\Hackaton\\third_hackathon\\pars_story\\media\\author_photo\\{author_name}.jpg"
+                        url_local_pictures_author_for_db=f'/media/author_photo/{title}.jpg'
+
+                        author_response = requests.get(author_photo)
+                        author_response.raise_for_status()
+                        with open(url_local_pictures_author, "wb") as file:
+                            file.write(author_response.content)
+                        insert_data['author_photo'] = url_local_pictures_author_for_db
+
                         author_bio = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/main/div/div[1]/div/div[1]/div/div/p').get_attribute('textContent')
                         insert_data['author_bio'] = author_bio
                         self.insert.insert_stories_category(insert_data)
