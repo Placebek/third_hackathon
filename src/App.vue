@@ -19,6 +19,7 @@ export default {
       toggleTheme: themeStore.toggleTheme,
     };
   },
+  
 };
 
 </script>

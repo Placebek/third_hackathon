@@ -1,50 +1,81 @@
 <template>
   <div class="h-screen bg-[#14161B] overflow-hidden relative">
     <div class="container h-screen flex items-center justify-center px-8 mx-auto">
-      <div class="bg-white h-[460px] w-[320px] rounded-lg relative p-7 shadow-lg shadow-cyan-200/20">
-        <form class="flex flex-col items-center mt-4 h-screen">
-          <h4 class="text-2xl font-semibold mb-7 text-center">SignUp</h4>
+      <div class="bg-white h-[550px] w-[320px] rounded-lg relative p-5 shadow-lg shadow-cyan-200/20">
+        <Form :validation-schema="schema" @submit="handleLogin">
+          <div class="flex flex-col items-center mt-4 h-screen">
+            <h4 class="text-2xl font-semibold mb-4 text-center">SignUp</h4>
+            
+            <div class="w-full">
+              <div class="form-group">
+                <Field 
+                  name="email"
+                  type="email"
+                  v-model="email"
+                  placeholder="Email" 
+                  class="input-box"
+                  :class="{'is-invalid': errors?.email}"
+                />
+                <!-- <ErrorMessage name="email" class="is-invalid " /> -->
+              </div>
+              <div class="form-group mt-2">
+                <Field 
+                  name="username"
+                  type="text"
+                  v-model="username"
+                  placeholder="Username" 
+                  class="input-box"
+                  :class="{'is-invalid': errors?.username}"
+                />
+                <!-- <ErrorMessage name="email" class="is-invalid " /> -->
+              </div>
+              <div class="form-group mt-2">
+                <Field
+                  name="age"
+                  type="number"
+                  placeholder="Age"
+                  class="input-box"
+                  v-model="age"
+                  :class="{'is-invalid': errors?.age}"
+                />
+                <!-- <ErrorMessage name="age" class="is-invalid" /> -->
+              </div>
+              <div class="form-group mt-2">
+                <Field 
+                  name="password" 
+                  type="password" 
+                  placeholder="Password" 
+                  class="input-box"
+                  v-model="password"
+                  :class="{'is-invalid': errors?.password}"
+                />
+                <!-- <ErrorMessage name="password" class="is-invalid " /> -->
+              </div>
+            </div>
 
-          <input
-            type="text"
-            placeholder="Email"
-            class="input-box"
-          />
-          <input
-            type="text"
-            placeholder="Username"
-            class="input-box"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            class="input-box"
-          />
-          
-          <button 
-            type="submit" 
-            class="btn-login-f"
-          >
-          SIGNUP
-          </button>
+            <div v-if="message" class="error-message mb-3">{{ message }}</div>
+            
+            <div class="w-full">
+              <div>
+                <button 
+                  type="submit" 
+                  class="btn-login-f"
+                >
+                SIGNUP
+                </button>
+              </div>
 
-          <!-- <router-link to="/signUp" class="btn-login-f">
-            SIGNUP
-          </router-link> -->
+              <p class="text-xs text-slate-500 text-center my-4">Or</p>
 
-          <p class="text-xs text-slate-500 text-center my-4">Or</p>
-
-          <!-- <button
-            type="button"
-            class="btn-login-s"
-          > -->
-          <button 
-            to="/signUp" 
-            class="btn-login-s"
-            @click="goToLogin"
-          >
-            LOGIN TO ACCOUNT
-          </button>
+              <button 
+                to="/" 
+                class="btn-login-s"
+                @click="goToLogin"
+              >
+              LOGIN TO ACCOUNT
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -52,15 +83,106 @@
 </template>
 
 <script>
+import { Form, Field, ErrorMessage, useForm, useField } from "vee-validate";
+import * as yup from "yup";
+import axios from "axios";
+import { ref } from "vue";
+import { useRouter } from 'vue-router';
+
 export default {
-  name: 'SignUpForm',
-  methods: {
-    goToLogin() {
-      this.$router.push('/');
-    }
-  }
+  name: "Login",
+  components: {
+    Form,
+    Field,
+    ErrorMessage,
+  },
+  setup() {
+    // Создаем роутер с помощью useRouter
+    const router = useRouter();
+
+    // Состояние для загрузки
+    const loading = ref(false);
+    const message = ref("");
+
+    // Определяем схему валидации с помощью yup
+    const schema = yup.object().shape({
+      email: yup
+        .string()
+        .required("Email or Username is required!"),
+      password: yup.string().required("Password is required!"),
+      username: yup.string().required("Username is required!"),
+      age: yup
+      .string()
+      .required("Age is required!")
+      .max(100, "Age must be less than 100"),
+    });
+
+    // useForm хук для валидации формы
+    const { errors, handleSubmit, reset } = useForm({
+      validationSchema: schema,
+    });
+
+    // useField для каждого поля
+    const { value: email } = useField("email");
+    const { value: username } = useField("username");
+    const { value: age } = useField("age");
+    const { value: password } = useField("password");
+
+    const handleLogin = async (values) => {
+      loading.value = true;
+      message.value = "";
+
+      try {
+        // Изменили объект для отправки правильных параметров
+        const response = await axios.post("http://172.20.10.3:8000/auth/register", {
+          email: values.email, 
+          username: values.username, 
+          age: values.age, 
+          password: values.password, 
+        });
+
+        // Если авторизация успешна, перенаправляем на профиль
+        router.push("/dashboard"); // Используем router.push для навигации
+      } catch (error) {
+        if (error.response.data.message == "")
+        loading.value = false;
+        console.log("SignUp error:", error);
+        message.value =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
+      }
+    };
+
+    const goToLogin = () => {
+      router.push('/login'); // Переходим на страницу регистрации
+    };
+
+    return {
+      email,  // Используем новое поле для email_or_username
+      password,
+      username,
+      age,
+      schema,
+      errors,
+      handleLogin,
+      loading,
+      message,
+      goToLogin,
+    };
+  },
 };
 </script>
 
 <style scoped>
+.is-invalid {
+  border-color: red;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
 </style>

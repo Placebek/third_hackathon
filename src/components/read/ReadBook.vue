@@ -10,7 +10,7 @@
             <div class="text-xl">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea neque nisi deserunt, quos accusantium ullam
             </div>
-          <div class="text-justify mt-5 text-lg indent-8">
+          <div class="text-justify mt-5 text-lg indent-8 ">
             <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci nemo velit eveniet quia sequi, reiciendis magni, provident laborum quod officia nobis. Odit vel libero minima, ipsa ducimus aut quibusdam veritatis.
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero nostrum, dignissimos perferendis porro, a quisquam ipsam expedita quasi dolorum adipisci provident. Illo quidem nesciunt, beatae vel quae quas? Assumenda, eum!</p>
             <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero nostrum, dignissimos perferendis porro, a quisquam ipsam expedita quasi dolorum adipisci provident. Illo quidem nesciunt, beatae vel quae quas? Assumenda, eum!</p>
@@ -44,7 +44,6 @@ export default {
       theme,
       (newTheme) => {
         const rootElement = document.documentElement;
-        console.log(theme);
 
         if (newTheme === "dark") {
           rootElement.classList.add("dark");

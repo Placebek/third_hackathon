@@ -1,30 +1,28 @@
 <template>
-  <div :class="theme">
-    <div :class="['fixed top-0 z-[99999] h-full transition-all bg-[#966acc] text-white duration-500 pt-6 pb-6 px-8 flex flex-col justify-between md:hidden', showMenu ? 'right-0' : '-right-[100%]']">
+  <div>
+    <div :class="['fixed top-0 z-[99999] h-full w-[250px] transition-all bg-[#966acc] text-white duration-500 pt-6 pb-6 px-8 flex flex-col justify-between md:hidden', showMenu ? 'right-0' : '-right-[100%]']">
       <div>
+        <!-- Кнопка поиска -->
         <div class="flex items-center justify-center gap-3">
-          <button 
-            @click="toggleTheme"
-            class="btn-menu-f"
-          >
-            Theme
-          </button>
           <button 
             to="/search" 
             class="btn-menu-f"
-            @click="goToSerachForm"
+            @click="goToSearch"
           >
             Search
           </button>
         </div>
+        <!-- Профиль пользователя -->
         <div class="mt-7 flex items-center justify-start gap-3">
-          <v-icon name="hi-solid-user-circle" class="h-[50px]" />
+          <div class="mt-2">
+            <v-icon name="hi-solid-user-circle" class="h-[48px] w-[48px]" />
+          </div>
           <div>
-            <h1 class="text-xl font-semibold">username</h1>
-            <h1 class="text-s">username@example.com</h1>
+            <h1 class="text-xl font-semibold">{{ userData?.username || 'Guest' }}</h1>
+            <h1 class="text-s">{{ userData?.email || 'No email available' }}</h1>
           </div>
         </div>
-
+        <!-- Меню навигации -->
         <nav class="mt-12 text-white">
           <ul class="space-y-6 text-lg">
             <li>
@@ -43,17 +41,20 @@
           </ul>
         </nav>
       </div>
+      <!-- Подвал -->
       <div class="text-sm">
-        <p>@2024 All Rights Reserved</p>
+        <p>@2025 All Rights Reserved</p>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref, onMounted } from "vue";
 import { addIcons } from "oh-vue-icons";
 import { HiSolidUserCircle } from "oh-vue-icons/icons";
+import axios from "axios";
+import { useRouter } from "vue-router";
 
 addIcons(HiSolidUserCircle);
 
@@ -64,39 +65,49 @@ export default {
       required: true
     }
   },
-  methods: {
-    goToSerachForm() {
-      this.$router.push('/serach');
-    },
-  },
   setup() {
-    const theme = ref(localStorage.getItem("theme") || "light");
+    const router = useRouter();
+    const userData = ref(null);
 
-    const toggleTheme = () => {
-      theme.value = theme.value === "dark" ? "light" : "dark";
+    const fetchUserProfile = async () => {
+      try {
+        // Извлекаем токен из localStorage
+        const accessToken = localStorage.getItem("access_token");
+
+        if (!accessToken) {
+          throw new Error("Токен доступа не найден. Пожалуйста, выполните вход.");
+        }
+
+        // Выполняем GET-запрос
+        const response = await axios.get("http://172.20.10.3:8000/user/profile", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        // debugger
+
+        // condole.log("AAAAAAAAAAA", name)
+        userData.value = response.data;
+      } catch (error) {
+        console.error("Ошибка при получении профиля:", error);
+        alert(error.response?.data?.detail || "Ошибка при получении данных профиля.");
+      }
     };
 
-    watch(
-      theme,
-      (newTheme) => {
-        const rootElement = document.documentElement;
+    // Вызываем fetchUserProfile при монтировании компонента
+    onMounted(() => {
+      fetchUserProfile();
+    });
 
-        if (newTheme === "dark") {
-          rootElement.classList.add("dark");
-          localStorage.setItem("theme", "dark");
-        } else {
-          rootElement.classList.remove("dark");
-          localStorage.setItem("theme", "light");
-        }
-      },
-      { immediate: true }
-    );
+    const goToSearch = () => {
+      router.push('/search');
+    };
 
     return {
-      theme,
-      toggleTheme
+      userData,
+      goToSearch,
     };
-  }
+  },
 };
 </script>
 

@@ -7,8 +7,7 @@
           <div class="blur-[5px] w-full h-full absolute top-0 left-0 login-bg-img">
           </div>
           
-          <div class="w-[250px] h-[320px] rounded-xl login-bg-img absolute ">
-          </div>
+          <div class="w-[250px] h-[320px] rounded-xl login-bg-img absolute "></div>
         </div>
         <div class="flex items-center flex-col text-center gap-3 p-6">
           <div class="text-3xl">
@@ -19,13 +18,17 @@
           </div>
         </div>
         <div class="px-5">
-          <button class="btn-login-f">
+          <button 
+            to="/mainbook" 
+            @click="goToReadBook"
+            class="btn-login-f"
+          >
             <v-icon name="io-book-sharp" class=""/>
             Read
           </button>
         </div>
         <div class="mt-7 w-full h-[500px] bg-[#1c1c1c] rounded-lg">
-          <div class="flex items-center justify-center flex-row gap-16 p-3">
+          <div class="flex items-center justify-center flex-row gap-16 p-3 border-b-[1px] border-gray-500">
             <div
               :class="{'text-white': selected === 'about', 'text-[#8f8f8f]': selected !== 'about'}"
               @click="selectTab('about')"
@@ -45,6 +48,18 @@
               status
             </div>
           </div>
+          <!-- Условное отображение контента в зависимости от выбранной вкладки -->
+          <div v-if="selected === 'about'">
+            <About />
+          </div>
+          <div v-if="selected === 'charpets'">
+            <!-- Здесь ваш контент для charpets -->
+            <Charpets />
+          </div>
+          <div v-if="selected === 'status'">
+            <!-- Здесь ваш контент для status -->
+            <Status />
+          </div>
         </div>
       </div>
     </div>
@@ -56,6 +71,11 @@ import { ref } from "vue";
 import { addIcons } from "oh-vue-icons";
 import { IoBookSharp } from "oh-vue-icons/icons";
 import Navbar from "../menu/Navbar.vue";
+import { useRouter } from 'vue-router';
+import About from './About.vue';
+import Charpets from './Charpets.vue';
+import Status from './Status.vue';
+
 
 addIcons(IoBookSharp);
 
@@ -63,18 +83,30 @@ export default {
   name: "MainBook",
   components: {
     Navbar,
-    
+    About,
+    Status,
+    Charpets
   },
   data() {
     return {
-      selected: 'about'
+      selected: 'about' // По умолчанию показываем вкладку 'about'
     };
   },
   methods: {
     selectTab(tab) {
-      this.selected = tab;
+      this.selected = tab; // При клике меняем выбранную вкладку
     }
-  }
+  },
+  setup() {
+    const router = useRouter();
+
+    const goToReadBook = () => {
+      router.push('/readbook'); // Переходим на страницу чтения книги
+    };
+    return {
+      goToReadBook,
+    };
+  },
 };
 </script>
 
