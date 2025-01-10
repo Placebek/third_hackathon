@@ -2,28 +2,30 @@
   <div class="bg-[#0A0A0A] h-full">
     <Navbar />
     <div>
-      <div class="mt-12 text-white ">
+      <div class="mt-12 text-white">
         <div class="flex justify-center items-end relative w-full h-[400px] bottom-0 bg-gradient-to-t from-black">
-          <div class="blur-[5px] w-full h-full absolute top-0 left-0 login-bg-img">
-          </div>
-          
-          <div class="w-[250px] h-[320px] rounded-xl login-bg-img absolute "></div>
+          <img v-if="selectedItem?.initial_picture" :src="getFullImagePath(selectedItem.initial_picture)" alt="Image not available"
+          class="blur-[5px] w-full h-full absolute top-0 left-0">
+
+          <img v-if="selectedItem?.initial_picture" :src="getFullImagePath(selectedItem.initial_picture)" alt="Image not available" class="w-[300px] h-[290px] rounded-xl absolute" />
         </div>
-        <div class="flex items-center flex-col text-center gap-3 p-6">
+        <div v-if="selectedItem" class="flex items-center flex-col text-center gap-3 p-6">
           <div class="text-3xl">
-            PUSS IN BOOTS
+            <!-- Выводим название книги -->
+            {{ selectedItem.title }}
           </div>
           <div class="text-sm">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea neque nisi deserunt, quos accusantium ullam 
+            <!-- Выводим подзаголовок книги -->
+            {{ selectedItem.subtitle }}
           </div>
         </div>
         <div class="px-5">
-          <button 
-            to="/mainbook" 
+          <button
+            to="/mainbook"
             @click="goToReadBook"
             class="btn-login-f"
           >
-            <v-icon name="io-book-sharp" class=""/>
+            <v-icon name="io-book-sharp" class="" />
             Read
           </button>
         </div>
@@ -48,17 +50,14 @@
               status
             </div>
           </div>
-          <!-- Условное отображение контента в зависимости от выбранной вкладки -->
           <div v-if="selected === 'about'">
-            <About />
+            <About :story-id="route.params.id" />
           </div>
           <div v-if="selected === 'charpets'">
-            <!-- Здесь ваш контент для charpets -->
-            <Charpets />
+            <Charpets :story-id="route.params.id" />
           </div>
           <div v-if="selected === 'status'">
-            <!-- Здесь ваш контент для status -->
-            <Status />
+            <Status :story-id="route.params.id" />
           </div>
         </div>
       </div>
@@ -67,20 +66,26 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { addIcons } from "oh-vue-icons";
 import { IoBookSharp } from "oh-vue-icons/icons";
 import Navbar from "../menu/Navbar.vue";
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import About from './About.vue';
 import Charpets from './Charpets.vue';
 import Status from './Status.vue';
-
+import axios from 'axios';
 
 addIcons(IoBookSharp);
 
 export default {
   name: "MainBook",
+  props: {
+    storyId: {
+      type: String,
+      required: true,
+    },
+  },
   components: {
     Navbar,
     About,
@@ -98,15 +103,39 @@ export default {
     }
   },
   setup() {
-    const router = useRouter();
+    const route = useRoute(); // Получаем текущие параметры маршрута
+    const router = useRouter(); // Получаем доступ к роутеру
+    const selectedItem = ref(null); // Для хранения данных, полученных с API
+
+    const storyId = route.params.id;
+    console.log("ID: ", storyId);
 
     const goToReadBook = () => {
-      router.push('/readbook'); // Переходим на страницу чтения книги
+      router.push('/readbook');
     };
+
+    // Функция для формирования полного пути к изображению
+    const getFullImagePath = (relativePath) => {
+      return `http://172.20.10.3:8000${relativePath}`; // Добавляем базовый URL
+    };
+
+    onMounted(() => {
+      axios.get(`http://172.20.10.3:8000/user/stories/${storyId}`)
+        .then(response => {
+          selectedItem.value = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching item data:', error);
+        });
+    });
+    
     return {
+      route,
       goToReadBook,
+      selectedItem,
+      getFullImagePath,
     };
-  },
+  }
 };
 </script>
 

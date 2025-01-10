@@ -26,11 +26,6 @@ const routes = [
     component: DashboardForm,
   },
   {
-    path: '/mainbook',
-    name: 'MainBook',
-    component: MainBook,
-  },
-  {
     path: '/settings',
     name: 'Settings',
     component: Settings,

@@ -2,7 +2,7 @@
   <div class="bg-[#0A0A0A] h-full">
     <Navbar />
     <div>
-      <div class="flex justify-center items-center py-4 m t-12 p-4">
+      <div class="flex justify-center items-center py-4 mt-12 p-4">
         <div class="relative w-full max-w-md text-white">
           <input
             v-model="searchQuery"
@@ -22,7 +22,7 @@
       >
         <!-- Image Section -->
         <div class="h-[200px] w-full bg-[#966acc]">
-          <img v-if="item?.initial_picture" :src="item.initial_picture" alt="fffff" class="" />
+          <img v-if="item?.initial_picture" :src="getFullImagePath(item.initial_picture)" alt="Image not available" class="w-full h-full object-cover" />
           <p v-else>Image not available</p> <!-- Fallback text if no image is available -->
         </div>
         
@@ -50,6 +50,13 @@ export default {
   name: "Dashboard",
   components: {
     Navbar
+  },
+  computed: {
+    getFullImagePath() {
+      return (relativePath) => {
+        return `http://172.20.10.3:8000${relativePath}`;
+      };
+    }
   },
   setup() {
     const searchQuery = ref("");  // Модель для поискового запроса
@@ -82,7 +89,7 @@ export default {
     };
 
     const goToMainBook = (id) => {
-      router.push({ name: 'MainBook', params: { id } });  // Передаем id в параметры маршрута
+      router.push({ name: 'MainBook', params: { id } }); 
     };
 
     onMounted(() => {

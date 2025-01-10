@@ -1,32 +1,28 @@
 <template>
     <div class="bg-[#1c1c1c] rounded-lg">
-      <div class="flex flex-row justify-between items-start p-8">
-        <div class="flex flex-col justify-start items-start gap-2">
-          <div>
-            Author name:
+      <div class="flex items-center p-3">
+        <div class="flex flex-col space-y-2">
+          <div class="flex flex-row itmes-start">
+            <div class="w-1/2">Author name:</div>
+            <div class="w-1/2">{{ storyData.author_name }}</div>
           </div>
-          <div>
-            Age category:
+          
+          <!-- Вторая строка -->
+          <div class="flex flex-row itmes-start">
+            <div class="w-1/2">Age category:</div>
+            <div class="w-1/2">{{ storyData.age_category }}</div>
           </div>
-          <div>
-            Popularity:
+          
+          <!-- Третья строка -->
+          <div class="flex flex-row itmes-start">
+            <div class="w-1/2">Popularity:</div>
+            <div class="w-1/2">10</div>
           </div>
-          <div>
-            Translated:
-          </div>
-        </div>
-        <div class="flex flex-col justify-start items-star ml-8 gap-2">
-          <div>
-            Adam
-          </div>
-          <div>
-            7-12
-          </div>
-          <div>
-            10
-          </div>
-          <div>
-            g4f
+          
+          <!-- Четвертая строка -->
+          <div class="flex flex-row itmes-start">
+            <div class="w-1/2">Readers:</div>
+            <div class="w-1/2">{{ storyData.story_reads }}</div>
           </div>
         </div>
       </div>
@@ -44,12 +40,30 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
+  props: {
+    storyId: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      rating: 7
+      storyData: {},
     };
-  }
+  },
+  mounted() {
+    axios
+      .get(`http://172.20.10.3:8000/user/stories/${this.storyId}`)
+      .then((response) => {
+        this.storyData = response.data;
+      })
+      .catch((error) => {
+        console.error("Error fetching story data:", error);
+      });
+  },
 };
 </script>
 
