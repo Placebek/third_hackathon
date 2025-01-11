@@ -38,6 +38,25 @@ class Inserting:
             raise
         finally:
             self.session.close()
+    
+
+    def update_story_berries(self, story_data):
+        try:
+            story_berries = self.session.query(StoryBerries).where(
+                StoryBerries.title == story_data['title']
+            ).one_or_none()
+            
+            if story_berries and story_berries.text is None:
+                story_berries.text = story_data['text']
+                self.session.commit()
+                return story_berries.id
+            elif story_berries:
+                return story_berries.id
+            else:
+                return None
+        except IntegrityError:
+            self.session.rollback()
+            raise
 
 
     def insert_author(self, story_data):

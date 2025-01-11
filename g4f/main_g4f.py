@@ -1,12 +1,21 @@
-import g4f
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
+from db_config import DatabaseManager
+import asyncio 
 
-response = g4f.ChatCompletion.create(
-    model=g4f.models.default,
-    messages=[{
-    	"role": "user", 
-    	"content": "Hello World :) I need to translate a big text. Do you have constranit for charachter, if which max simvol for you?",
-    }],
-    timeout=300,
-)
 
-print(f"Result:", response) 
+from update import update_story_translations, update_story_text
+
+db_manager = DatabaseManager()
+def get_db():
+    db = db_manager.Session()
+    try:
+        yield db
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    db = next(get_db())
+    asyncio.run(update_story_text(db))
+    print("All stories updated successfully.")

@@ -2,6 +2,7 @@ from datetime import datetime
 from sqlalchemy import Boolean, Column, DateTime, String, Integer, Float, ForeignKey, func, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from model.model import *
 
 
 Base = declarative_base()
@@ -69,12 +70,12 @@ class StoryBerries(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(526), nullable=False)
     title_kz = Column(String(526), nullable=True)
-    prologue_kz = Column(String(526), nullable=True)
+    prologue_kz = Column(Text, nullable=True)
     subtitle = Column(Text, nullable=False)
     subtitle_kz = Column(Text, nullable=True)
     initial_picture = Column(Text)
     story_reads = Column(String(20))
-    text = Column(Text, nullable=True)
+    text = Column(Text, nullable=False)
     text_kz = Column(Text, nullable=True)
     age_category_id = Column(Integer, ForeignKey('age_category.id'), nullable=False)
     author_id = Column(Integer, ForeignKey('authors.id'), nullable=True)
