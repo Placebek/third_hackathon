@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.user.commands.user_crud import update_user_data, delete_favorite_story, get_all_favorite_story, all_fairy_tails, post_favorite_create, get_user_data, one_fairy_tail
 from app.api.user.schemas.response import StatusResponse, FairyTailsResponse, GetUserData, FairyTailsForReads
 from app.api.user.schemas.create import FavoriteCreate, UserData, FavoriteDelete
-from context.context import get_access_token
-from database.db import get_db
+from app.context.context import get_access_token
+from app.database.db import get_db
 
 
 router = APIRouter()

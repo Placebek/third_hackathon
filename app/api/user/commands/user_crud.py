@@ -7,9 +7,9 @@ import json
 
 from app.api.user.schemas.response import FairyTailsResponse, StatusResponse, GetUserData, CategoryStoryInfo
 from app.api.user.schemas.create import FavoriteCreate, UserData
-from context.context import validate_access_token
-from decorators.decorators import validate_user_from_token
-from model.model import Users, Favorites, StoryBerries, StoriesCategory, Categories, Authors, AgeCategories
+from app.context.context import validate_access_token
+from app.decorators.decorators import validate_user_from_token
+from app.model.model import Users, Favorites, StoryBerries, StoriesCategory, Categories, Authors, AgeCategories
 
 
 

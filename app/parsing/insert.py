@@ -1,6 +1,7 @@
 from sqlalchemy.exc import IntegrityError
-from db_config import DatabaseManager
-from db_pars import *
+from app.model.db_config import DatabaseManager
+from app.model.model import *
+
 
 
 class Inserting:

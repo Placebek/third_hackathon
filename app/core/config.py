@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from core.config_path import BasePath
+from app.core.config_path import BasePath
 
 
 class Settings(BaseSettings):

@@ -21,7 +21,7 @@ origins = [
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
 ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
 
-media_folder = "media/"
+media_folder = "app/media/"
 app.mount("/media", StaticFiles(directory=media_folder), name="media")
 
 

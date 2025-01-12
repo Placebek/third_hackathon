@@ -5,7 +5,7 @@ from app.api.auth.shemas.create import UserBase, UserCreate
 from app.api.auth.shemas.response import TokenResponse, TokenResponseLogin
 
 from app.api.auth.commands.auth_user_crud import user_register, user_login
-from database.db import get_db
+from app.database.db import get_db
 
 router = APIRouter()
 

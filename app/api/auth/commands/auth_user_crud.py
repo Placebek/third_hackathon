@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from sqlalchemy import insert, select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from context.context import create_access_token, hash_password, verify_password
+from app.context.context import create_access_token, hash_password, verify_password
 from app.api.auth.shemas.create import UserBase, UserCreate
 from app.api.auth.shemas.response import TokenResponse, TokenResponseLogin
-from model.model import Users
+from app.model.model import Users
 
 
 async def user_register(user: UserCreate, db: AsyncSession):

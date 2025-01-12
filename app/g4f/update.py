@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, func
-from db_pars import StoryBerries
-from translate_titles import translate_to_kazakh, translate_large_text, translate_text_to_kazakh
+from app.database.db import get_db
+from app.model.model import StoryBerries
+
+from .translate_titles import translate_to_kazakh, translate_large_text, translate_text_to_kazakh
 
 
 

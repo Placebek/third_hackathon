@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError
 
-from context.context import validate_access_token
-from model.model import Users
+from app.context.context import validate_access_token
+from app.model.model import Users
 from sqlalchemy import select
 
 

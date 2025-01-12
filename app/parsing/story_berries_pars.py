@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
-from insert import Inserting
+from .insert import Inserting
 
 class StoryBerries:
     def __init__(self):
@@ -24,7 +24,7 @@ class StoryBerries:
         options.add_experimental_option('useAutomationExtension', False)
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_argument("--disable-software-rasterizer")
-        self.service = Service("D:\Hackaton\\third_hackathon\pars_story\chromedriver-win64\chromedriver.exe")
+        self.service = Service("D:\\Hackaton\\third_hackathon\\pars_story\\app\\parsing\\chromedriver-win64\\chromedriver.exe")
         self.options = options
         self.driver = None
         self.wait = None
@@ -58,7 +58,7 @@ class StoryBerries:
         if self.driver:
             self.driver.quit()
 
-    def pars_story(self, url):
+    def pars_story(self):
         insert_data = {}
         self.setup_driver()                        
             
@@ -93,7 +93,7 @@ class StoryBerries:
 
                         try:
                             initial_picture = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'/html/body/div[1]/div/div[2]/section/div/div/div/div[{sub_index}]/article/figure/a/img'))).get_attribute('src')
-                            url_local_pictures= f"D:\\Hackaton\\third_hackathon\\pars_story\\media\\story_pictures\\{title}.jpg"
+                            url_local_pictures= f"D:\\Hackaton\\third_hackathon\\pars_story\\app\\media\\story_pictures\\{title}.jpg"
                             url_local_pictures_for_db=f'/media/story_pictures/{title}.jpg'
                             response = requests.get(initial_picture)
                             response.raise_for_status()
@@ -138,7 +138,7 @@ class StoryBerries:
                         insert_data['author_name'] = author_name
 
                         author_photo = self.driver.find_element(By.XPATH, '/html/body/div[1]/div/div/main/div/div[1]/div/header/img').get_attribute('src')
-                        url_local_pictures_author= f"D:\\Hackaton\\third_hackathon\\pars_story\\media\\author_photo\\{author_name}.jpg"
+                        url_local_pictures_author= f"D:\\Hackaton\\third_hackathon\\pars_story\\app\\media\\author_photo\\{author_name}.jpg"
                         url_local_pictures_author_for_db=f'/media/author_photo/{title}.jpg'
 
                         author_response = requests.get(author_photo)
@@ -161,15 +161,13 @@ class StoryBerries:
             
         except Exception as e:
                 print(f"Ошибка при обработке песен автора: {e}")
+        
+        self.close_driver()
 
 
     def run(self):
-        result = self.pars_story(url='https://www.storyberries.com/category/fairy-tales/famous-fairy-tales/page/1')
+        result = self.pars_story()
         
         return result
 
 
-if __name__ == "__main__":
-    news = StoryBerries()
-    result = news.run()
-    print(result)

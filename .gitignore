@@ -17,5 +17,5 @@ envenv.py
 cert.pem
 key.pem
 chromedriver-win64/
-media/story_pictures/
-media/author_photo/
+app/media/story_pictures/
+app/media/author_photo/
